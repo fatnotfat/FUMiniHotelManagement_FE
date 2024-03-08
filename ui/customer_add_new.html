@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Customer Management</title>
+    <link rel="stylesheet" href="/lib/node_modules/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="/lib/css/style.css" asp-append-version="true" />
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+</head>
+
+<body>
+    <div>
+        <h2>Customer Information Form</h2>
+        <form id="addNewForm">
+            <label for="customerFullName">Full Name:</label><br>
+            <input type="text" id="customerFullName" name="customerFullName" required><br><br>
+
+            <label for="telephone">Telephone:</label><br>
+            <input type="tel" id="telephone" name="telephone" required><br><br>
+
+            <label for="emailAddress">Email Address:</label><br>
+            <input type="email" id="emailAddress" name="emailAddress" required><br><br>
+
+            <label for="customerBirthday">Birthday:</label><br>
+            <input type="date" id="customerBirthday" name="customerBirthday" required><br><br>
+
+            <label for="customerStatus">Status:</label><br>
+            <select id="customerStatus" name="customerStatus" required>
+                <option value="1">Active</option>
+                <option value="0">Inactive</option>
+            </select><br><br>
+
+            <label for="password">Password:</label><br>
+            <div>
+                <input type="password" id="password" name="password" required><br><br>
+            </div>
+
+
+            <input type="submit" value="Submit">
+        </form>
+    </div>
+
+
+
+    <script>
+        $('#addNewForm').submit(function (event) {
+            event.preventDefault(); // Ngăn chặn việc gửi yêu cầu form một cách truyền thống
+
+            // Lấy giá trị từ form
+            var customerFullName = $('#customerFullName').val();
+            var telephone = $('#telephone').val();
+            var emailAddress = $('#emailAddress').val();
+            var customerBirthday = $('#customerBirthday').val();
+            var customerStatus = document.getElementById("customerStatus").value;
+            var password = $('#password').val();
+
+
+
+            // Tạo đối tượng dữ liệu đăng nhập
+            var customer = {
+                customerFullName: customerFullName,
+                telephone: telephone,
+                emailAddress: emailAddress,
+                customerBirthday: customerBirthday,
+                customerStatus: customerStatus,
+                password: password
+            };
+
+            var token = localStorage.getItem('jwtToken');
+            // Gửi yêu cầu AJAX
+            $.ajax({
+                url: 'https://localhost:7191/api/v1/customers', // URL của API đăng kí
+                type: 'POST', // Phương thức POST
+                contentType: 'application/json', // Kiểu dữ liệu gửi đi là JSON
+                beforeSend: function (xhr) {
+                    // Set the Authorization header with the token
+                    xhr.setRequestHeader('Authorization', 'Bearer ' + token);
+                },
+                data: JSON.stringify(customer), // Chuyển đổi dữ liệu đăng kí sang JSON
+                success: function (response) {
+                    // // Xử lý phản hồi thành công từ server
+                    // var token = response.token; // Giả sử token được trả về từ API là một trường tên 'token'
+                    // $('#result').html('Login successful. Token: ' + token);
+                    // // Lưu token vào local storage hoặc cookie để sử dụng cho các yêu cầu sau
+                    // localStorage.setItem('jwtToken', token);
+                    window.alert('Add successfully!');
+                    window.location.href = '/ui/customer_management.html';
+                },
+                error: function (xhr, status, error) {
+                    // Xử lý lỗi
+                    $('#result').html('Error: ' + error);
+                }
+            });
+        });
+    </script>
+</body>
+
+</html>

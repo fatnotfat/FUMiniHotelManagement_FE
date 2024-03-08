@@ -1,0 +1,94 @@
+body {
+    background-color : #4fb2d8;
+}
+
+.login-card{
+    padding: 40px;
+    width: 274px;
+    background-color: #ffffff;
+    margin: 0 auto 10px;
+    border-radius: 2px;
+    box-shadow: 0px 2px 2px rgba(0,0,0,0.3);
+    overflow: hidden;
+}
+
+
+.login-card h1{
+    font-weight: 100;
+    text-align: center;
+    font-size: 2.3em;
+}
+
+
+.login-card input[type=text], input[type=password]{
+    height: 36px;
+    font-size: 16px;
+    width: 100%;
+    margin-bottom: 10px;
+    background: #ffffff;
+    padding: 0 8px;
+    box-sizing: border-box;
+    border: 1px solid #d9d9d9
+}
+
+
+.login-card button[type=submit], .add-new-card button[type=submit]{
+    width:100%;
+    display:block;
+    margin-bottom: 10px;
+    position: relative;
+    text-align: center;
+    font-size: 14px;
+    font-weight: 700;
+    height: 36px;
+    padding: 0 8px;
+    background-color: #4d90fe;
+    border: 0px;
+    color: #ffffff;
+    text-transform: uppercase;
+}
+
+
+.update-card button[type=submit]{
+    width:100%;
+    display:block;
+    margin-bottom: 10px;
+    position: relative;
+    text-align: center;
+    font-size: 14px;
+    font-weight: 700;
+    height: 36px;
+    padding: 0 8px;
+    background-color: #39d841;
+    border: 0px;
+    color: #494141;
+    text-transform: uppercase;
+}
+
+
+.search-container {
+    text-align: center;
+    margin-bottom: 20px;
+    margin-top: 20px;
+}
+
+#searchInput {
+    padding: 10px;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+    margin-right: 5px;
+    width: 200px;
+}
+
+#searchButton {
+    padding: 10px 20px;
+    border-radius: 5px;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    cursor: pointer;
+}
+
+#searchButton:hover {
+    background-color: #0056b3;
+}

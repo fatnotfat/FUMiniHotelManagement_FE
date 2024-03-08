@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Customer Management</title>
+    <link rel="stylesheet" href="/lib/node_modules/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="/lib/css/style.css" asp-append-version="true" />
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+</head>
+
+<body>
+
+
+
+
+
+
+    <div class="panel panel-primary">
+        <div class="panel-heading">
+            GET API Data
+        </div>
+        <div class="search-container">
+            <input type="text" id="searchInput" placeholder="Search by customer name...">
+            <button type="button" id="searchButton">Search</button>
+        </div>
+        <div class="panel-body">
+            <table class="table table-bordered" id="Table">
+                <tr>
+                    <th>Id</th>
+                    <th>Name</th>
+                    <th>Email</th>
+                    <th>Action</th>
+                </tr>
+            </table>
+            <button type="button" id="prevPage">Previous</button>
+            <button type="button" id="nextPage">Next</button>
+
+        </div>
+        <div>
+            <div class="add-new-card">
+                <button type="submit" id="addButton">
+                    Add new
+                </button>
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <script type="text/javascript">
+        $(document).ready(function () {
+            Manager.GetCustomers();
+        })
+
+        var Manager = {
+            GetCustomers: function () {
+                var obj = "";
+                var serviceUrl = "https://localhost:7191/api/v1/customers";
+                window.Manager.GetAPI(serviceUrl, onSuccess, onFailed);
+                function onSuccess(jsonData) {
+                    // debugger;
+                    obj = jsonData;
+                    $.each(jsonData, function (i, item) {
+                        var rows = "<tr>" +
+                            "<td id = 'Id'>" + item.customerId + "</td>" +
+                            "<td id = 'Name'>" + item.customerFullName + "</td>" +
+                            "<td id = 'EmailAddress'>" + item.emailAddress + "</td>" +
+                            "<td id = 'updateButton" + item.customerId + "'> " +
+                            "   <div class='update-card' data-customerid='" + item.customerId + "'>" +
+                            "       <button type='submit'> Update </button> " +
+                            "   </div>" +
+                            "</td>" +
+                            "</tr>";
+                        $('#Table').append(rows);
+                    });
+
+                }
+
+                function onFailed(error) {
+                    window.alert(error.statusText);
+                }
+                return obj;
+            },
+
+            GetAPI: function (serviceUrl, successCallback, errorCallback) {
+                var token = localStorage.getItem('jwtToken');
+                $.ajax({
+                    type: "GET",
+                    url: serviceUrl,
+                    dataType: "json",
+                    beforeSend: function (xhr) {
+                        // Set the Authorization header with the token
+                        xhr.setRequestHeader('Authorization', 'Bearer ' + token);
+                    },
+                    success: successCallback,
+                    error: errorCallback
+                });
+            },
+
+            GetCustomersPaged: function (page) {
+                var obj = "";
+                var serviceUrl = "https://localhost:7191/api/v1/customers/search-by-name/paging?PageNumber=" + page + "&PageSize=5";
+                window.Manager.GetAPI(serviceUrl, onSuccess, onFailed);
+
+                function onSuccess(jsonData) {
+                    // Clear existing table data
+                    $('#Table').empty();
+
+                    $.each(jsonData, function (i, item) {
+                        var rows = "<tr>" +
+                            "<td id='Id'>" + item.customerId + "</td>" +
+                            "<td id='Name'>" + item.customerFullName + "</td>" +
+                            "<td id='EmailAddress'>" + item.emailAddress + "</td>" +
+                            "<td id='updateButton" + item.customerId + "'> " +
+                            "   <div class='update-card' data-customerid='" + item.customerId + "'>" +
+                            "       <button type='submit'> Update </button> " +
+                            "   </div>" +
+                            "</td>" +
+                            "</tr>";
+                        $('#Table').append(rows);
+                    });
+
+                }
+
+                function onFailed(error) {
+                    window.alert(error.statusText);
+                }
+            },
+
+            SearchCustomers: function (searchTerm) {
+                var obj = "";
+                var serviceUrl = "https://localhost:7191/api/v1/customers/search-by-name/" + searchTerm;
+                window.Manager.GetAPI(serviceUrl, onSuccess, onFailed);
+
+                function onSuccess(jsonData) {
+                    // Clear existing table data
+                    $('#Table').empty();
+
+                    $.each(jsonData, function (i, item) {
+                        var rows = "<tr>" +
+                            "<td id='Id'>" + item.customerId + "</td>" +
+                            "<td id='Name'>" + item.customerFullName + "</td>" +
+                            "<td id='EmailAddress'>" + item.emailAddress + "</td>" +
+                            "<td id='updateButton" + item.customerId + "'> " +
+                            "   <div class='update-card' data-customerid='" + item.customerId + "'>" +
+                            "       <button type='submit'> Update </button> " +
+                            "   </div>" +
+                            "</td>" +
+                            "</tr>";
+                        $('#Table').append(rows);
+                    });
+                }
+
+                function onFailed(error) {
+                    window.alert(error.statusText);
+                }
+            }
+        };
+
+        $(document).ready(function () {
+            $("#searchButton").click(function () {
+                var searchValue = $("#searchInput").val();
+                if (searchValue.trim() !== "") {
+                    Manager.SearchCustomers(searchValue);
+                } else {
+                    // If search input is empty, reload the initial page
+                    Manager.GetCustomersPaged(1);
+                }
+            });
+        });
+
+
+        $(document).ready(function () {
+            $("#addButton").click(function () {
+                // alert("button");
+                window.location.href = '/ui/customer_add_new.html';
+            });
+        });
+
+        $(document).ready(function () {
+            // Event delegation for dynamically added elements
+            $("#Table").on("click", ".update-card", function () {
+                var customerId = $(this).data("customerid");
+                var customerEmail = $(this).closest('tr').find('#EmailAddress').text(); // Get customer email from the corresponding row
+                var customerData = { // Create an object to store both customerId and customerEmail
+                    customerId: customerId,
+                    customerEmail: customerEmail
+                };
+                localStorage.setItem('selectedCustomerData', JSON.stringify(customerData));
+                window.location.href = '/ui/customer_update.html';
+            });
+
+        });
+
+        $(document).ready(function () {
+            // // Load initial page on document ready
+            // Manager.GetCustomersPaged(1);
+
+            // // Next button click
+            // $("#nextPage").click(function () {
+            //     var currentPage = 1; // Get current page from some state variable
+            //     Manager.GetCustomersPaged(currentPage + 1);
+            // });
+
+            // // Previous button click
+            // $("#prevPage").click(function () {
+            //     var currentPage = 1; // Get current page from some state variable
+            //     Manager.GetCustomersPaged(currentPage - 1);
+            // });
+            var currentPage = 1; // Initialize current page
+
+            // Load initial page on document ready
+            Manager.GetCustomersPaged(currentPage);
+
+            // Next button click
+            $("#nextPage").click(function () {
+                currentPage++; // Increment current page
+                if (currentPage < 1) currentPage = 1; // Ensure current page is not negative
+                Manager.GetCustomersPaged(currentPage);
+            });
+
+            // Previous button click
+            $("#prevPage").click(function () {
+                currentPage--; // Decrement current page
+                if (currentPage < 1) currentPage = 1; // Ensure current page is not negative
+                Manager.GetCustomersPaged(currentPage);
+            });
+        });
+
+    </script>
+
+</body>
+
+</html>

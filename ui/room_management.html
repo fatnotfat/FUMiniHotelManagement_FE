@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Room Management</title>
+    <link rel="stylesheet" href="/lib/node_modules/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="/lib/css/style.css" asp-append-version="true" />
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+</head>
+
+<body>
+
+    <div class="panel panel-primary">
+        <div class="panel-heading">
+            GET API Data
+        </div>
+        <div class="search-container">
+            <input type="text" id="searchInput" placeholder="Search by room number...">
+            <button type="button" id="searchButton">Search</button>
+        </div>
+        <div class="panel-body">
+            <table class="table table-bordered" id="Table">
+                <tr>
+                    <th>Room Id</th>
+                    <th>Room Number</th>
+                    <th>Room Type Description</th>
+                    <th>Max Capacity</th>
+                    <th>Price Per Day</th>
+                    <th>Action</th>
+                </tr>
+            </table>
+            <button type="button" id="prevPage">Previous</button>
+            <button type="button" id="nextPage">Next</button>
+        </div>
+    </div>
+
+    <script type="text/javascript">
+        // Your JavaScript code here...
+        $(document).ready(function () {
+            Manager.GetRooms();
+        });
+
+        var Manager = {
+            GetRooms: function () {
+                var obj = "";
+                var serviceUrl = "https://localhost:7191/api/v1/RoomInformations";
+                window.Manager.GetAPI(serviceUrl, onSuccess, onFailed);
+
+                function onSuccess(jsonData) {
+                    obj = jsonData;
+                    $.each(jsonData, function (i, item) {
+                        var rows = "<tr>" +
+                            "<td id='RoomId'>" + item.roomId + "</td>" +
+                            "<td id='RoomNumber'>" + item.roomNumber + "</td>" +
+                            "<td id='RoomTypeDescription'>" + item.roomType.typeDescription + "</td>" +
+                            "<td id='MaxCapacity'>" + item.roomMaxCapacity + "</td>" +
+                            "<td id='PricePerDay'>" + item.roomPricePerDay + "</td>" +
+                            "<td id='updateButton" + item.roomId + "'> " +
+                            "   <div class='update-card' data-roomid='" + item.roomId + "'>" +
+                            "       <button type='submit'> Update </button> " +
+                            "   </div>" +
+                            "</td>" +
+                            "</tr>";
+                        $('#Table').append(rows);
+                    });
+                }
+
+                function onFailed(error) {
+                    window.alert(error.statusText);
+                }
+                return obj;
+            },
+
+            GetAPI: function (serviceUrl, successCallback, errorCallback) {
+                var token = localStorage.getItem('jwtToken');
+                $.ajax({
+                    type: "GET",
+                    url: serviceUrl,
+                    dataType: "json",
+                    beforeSend: function (xhr) {
+                        // Set the Authorization header with the token
+                        xhr.setRequestHeader('Authorization', 'Bearer ' + token);
+                    },
+                    success: successCallback,
+                    error: errorCallback
+                });
+            },
+
+            // Pagination and search functions can be implemented similarly as before...
+        };
+
+    </script>
+
+</body>
+
+</html>

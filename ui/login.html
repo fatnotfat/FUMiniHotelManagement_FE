@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login Form</title>
+    <link rel="stylesheet" href="/lib/css/style.css" asp-append-version="true" />
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+</head>
+
+<body>
+
+    <h2 style="font-family: Cambria, Cochin, Georgia, Times, 'Times New Roman', serif;">Login Form</h2>
+    <div class="login-card">
+        <form id="loginForm">
+            <input type="text" id="email" name="email" required placeholder="Enter email"><br><br>
+
+            <input type="password" id="password" name="password" required placeholder="Enter password"><br><br>
+
+            <button type="submit" value="Login">Login</button>
+        </form>
+    </div>
+
+
+    <div id="result"></div>
+
+    <script>
+        // Thực hiện AJAX khi form được nộp
+        $('#loginForm').submit(function (event) {
+            event.preventDefault(); // Ngăn chặn việc gửi yêu cầu form một cách truyền thống
+
+            // Lấy giá trị từ form
+            var email = $('#email').val();
+            var password = $('#password').val();
+
+            // Tạo đối tượng dữ liệu đăng nhập
+            var loginData = {
+                email: email,
+                password: password
+            };
+
+            // Gửi yêu cầu AJAX
+            $.ajax({
+                url: 'https://localhost:7191/api/v1/auth/login', // URL của API đăng nhập
+                type: 'POST', // Phương thức POST
+                contentType: 'application/json', // Kiểu dữ liệu gửi đi là JSON
+                data: JSON.stringify(loginData), // Chuyển đổi dữ liệu đăng nhập sang JSON
+                success: function (response) {
+                    // Xử lý phản hồi thành công từ server
+                    var token = response; // Giả sử token được trả về từ API là một trường tên 'token'
+                    $('#result').html('Login successful. Token: ' + token);
+                    // Lưu token vào local storage hoặc cookie để sử dụng cho các yêu cầu sau
+                    localStorage.setItem('jwtToken', token);
+                    // alert(token);
+                    window.location.href = '/ui/option_page.html';
+                },
+                error: function (xhr, status, error) {
+                    // Xử lý lỗi
+                    $('#result').html('Error: ' + error);
+                }
+            });
+        });
+    </script>
+
+</body>
+
+</html>
